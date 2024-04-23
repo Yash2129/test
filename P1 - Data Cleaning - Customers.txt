@@ -1,0 +1,48 @@
+import pandas as pd
+#sample data with inconsistencies and errors
+
+data={
+    'Customer_id':[101,102,103,104,105],
+    'First_Name':['John','Alice','Bob','Emily','Mike'],
+    'Last_Name':['Doe','Smith','Johnson','Williams',''],
+    'Age':[25,30,35,'thirty-six',40],
+    'Gender':['M','F','Male','Female','Male'],
+    'Email':['john.doe@example.com','alice.smith@example.com','bob.johnson@example.com','emily.williams@example.com','mike@example.com'],
+    'Phone':['123-456-7890','555-555-5555','999-999-9999','','111-111-1111']
+}
+#convert the dictionary into a pandas dataframe
+df=pd.DataFrame(data)
+#Display the original data
+print("Original Customer Data")
+print(df)
+print()
+
+#Data cleaning Steps
+
+#1 Handling Missing Values
+#convert non-numeric 'Age' values to NaN
+df['Age']=pd.to_numeric(df['Age'],errors='coerce')
+
+#Replace missing values in 'Age' column with the median age
+median_age=df['Age'].median()
+df['Age'].fillna(median_age,inplace=True)
+
+# Replace empty strings in'Last_Name' and 'Phone' columns with NaN
+df['Last_Name'].replace('',pd.NA,inplace=True)
+df['Phone'].replace('',pd.NA,inplace=True)
+
+#2 Handling Inconsistent values
+#Standardize gender values to 'Male','Female', or 'Other'
+
+df['Gender']=df['Gender'].str.lower().map({'M':'Male','F':'Female'}).fillna('Other')
+
+#3 Validating Data
+def validate_email(email):
+    if '@' in email:
+        return email
+    else:
+        return pd.NA
+df['Email']=df['Email'].apply(validate_email)
+#display the cleaned data
+prin t("Cleaned data")
+print(df)
